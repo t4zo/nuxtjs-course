@@ -6,10 +6,13 @@
     <section>
       <BaseCard>
         <div class="controls">
-          <BaseButton mode="outline" @refreshCoaches="refreshCoaches"
+          <BaseButton mode="outline" @click="refreshCoaches"
             >Refresh</BaseButton
           >
-          <BaseButton isLink to="/register" v-if="!isCoach"
+          <BaseButton isLink to="/auth?redirect=register" v-if="!isAuthenticated">
+            Login to Register as Coach</BaseButton
+          >
+          <BaseButton isLink to="/register" v-if="!isCoach && isAuthenticated"
             >Register as Coach</BaseButton
           >
         </div>
@@ -47,34 +50,22 @@ export default {
   // created() {
   //   this.$store.dispatch('coaches/fetchCoaches');
   // },
-  async asyncData({ $axios, store }) {
-    const { data } = await $axios.get(
-      "https://vuejs-course-d9ebe-default-rtdb.firebaseio.com/coaches.json"
-    );
-    const coaches = [];
-    for (const coach in data) {
-      coaches.push({
-        firstName: data[coach].firstName,
-        lastName: data[coach].lastName,
-        areas: data[coach].areas,
-        description: data[coach].description,
-        hourlyRate: data[coach].hourlyRate,
-        id: coach
-      });
-    }
-
-    store.dispatch("coaches/setCoaches", coaches);
+  async asyncData({ store }) {
+    await store.dispatch('coaches/fetchCoaches');
   },
   computed: {
     filteredCoaches() {
       const coaches = this.$store.getters["coaches/coaches"];
 
-      return coaches.filter(
+      return coaches?.filter(
         coach =>
           (this.activeFilters.frontend && coach.areas.includes("frontend")) ||
           (this.activeFilters.backend && coach.areas.includes("backend")) ||
           (this.activeFilters.career && coach.areas.includes("career"))
       );
+    },
+    isAuthenticated() {
+      return this.$store.getters["auth/isAuthenticated"];
     },
     isCoach() {
       return this.$store.getters["coaches/isCoach"];

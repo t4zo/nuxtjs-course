@@ -1,9 +1,9 @@
 <template>
   <div>
-    <NuxtLink v-if="isLink" :to="to" :class="mode">
+    <NuxtLink v-if="isLink" :to="to" :class="mode" :type="type">
       <slot></slot>
     </NuxtLink>
-    <button v-else :class="mode" @click="handleClick">
+    <button v-else :class="mode" @click="handleClick" :type="type">
       <slot></slot>
     </button>
   </div>
@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  emits: ['refreshCoaches'],
+  emits: ['click'],
   props: {
     mode: {
       type: String,
@@ -28,15 +28,14 @@ export default {
       required: false,
       default: "/",
     },
-    // refreshCoaches: {
-    //   type: Function,
-    //   required: false,
-    //   default: () => {},
-    // }
+    type: {
+      type: String,
+      required: false
+    }
   },
   methods: {
     handleClick() {
-      this.$emit('refreshCoaches');
+      this.$emit('click');
     }
   }
 };

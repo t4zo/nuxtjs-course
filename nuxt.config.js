@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'findacoach',
+    title: 'Find a Coach',
     htmlAttrs: {
       lang: 'pt-BR'
     },
@@ -14,6 +14,10 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
+  },
+
+  env: {
+    FIREBASE_KEY: process.env.NUXT_ENV_FIREBASE_API_KEY,
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css

@@ -1,6 +1,9 @@
 <template>
   <div>
     <p>Home</p>
+    <nuxt-link to="/auth">Auth</nuxt-link>
+    <nuxt-link to="/register">Register</nuxt-link>
+    <nuxt-link to="/requests">Requests</nuxt-link>
   </div>
 </template>
 

@@ -12,7 +12,7 @@
     </div>
     <div class="actions">
       <BaseButton isLink mode="outline" :to="coachDetailLink">Details</BaseButton>
-      <BaseButton isLink :to="coachContactLink">Contact</BaseButton>
+      <BaseButton v-if="isAuthenticated" isLink :to="coachContactLink">Contact</BaseButton>
     </div>
   </div>
 </template>
@@ -34,6 +34,9 @@ export default {
     coachDetailLink() {
       return `${this.$route.path}/${this.coach.id}`;
     },
+    isAuthenticated() {
+      return this.$store.getters['auth/isAuthenticated'];
+    }
   },
 };
 </script>

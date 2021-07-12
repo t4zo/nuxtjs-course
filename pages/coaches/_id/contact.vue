@@ -40,7 +40,7 @@ export default {
       // }
       // this.formIsValid = true;
     },
-    submitForm() {
+    async submitForm() {
       const isValid = this.validateForm();
       if(!isValid) {
         return;
@@ -52,7 +52,7 @@ export default {
         coachId: this.$route.params.id,
       }
 
-      this.$store.dispatch('requests/contactCoach', request)
+      await this.$store.dispatch('requests/contactCoach', request)
       this.$router.replace('/coaches');
     }
   }

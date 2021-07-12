@@ -9,9 +9,10 @@ import CoachForm from "@/components/CoachForm.vue";
 
 export default {
   components: { CoachForm },
+  middleware: 'authenticated',
   methods: {
-    saveData(formData) {
-      this.$store.dispatch('coaches/addCoach', formData);
+    async saveData(formData) {
+      await this.$store.dispatch('coaches/addCoach', formData);
       this.$router.push('/coaches');
     }
   }

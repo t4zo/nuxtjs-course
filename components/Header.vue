@@ -4,14 +4,33 @@
       <h1><NuxtLink to='/'>Find a Coach</NuxtLink></h1>
       <ul>
         <li><NuxtLink to='/coaches'>Coaches</NuxtLink></li>
-        <li><NuxtLink to='/requests'>Requests</NuxtLink></li>
+        <li v-if="isLoggedIn"><NuxtLink to='/requests'>Requests</NuxtLink></li>
+        <li v-else><NuxtLink to='/auth'>Login</NuxtLink></li>
+        <li v-if="isLoggedIn" @click="logout">
+          <base-button>Logout</base-button>
+        </li>
       </ul>
     </nav>
   </header>
 </template>
 
 <script>
-export default {};
+import BaseButton from '~/components/ui/BaseButton.vue'
+
+export default {
+  components: { BaseButton },
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters['auth/isAuthenticated'];
+    }
+  },
+  methods: {
+    logout() {
+      this.$store.dispatch('auth/logout');
+      this.$router.replace("/coaches");
+    }
+  }
+};
 </script>
 
 <style lang='scss' scoped>
