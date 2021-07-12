@@ -6,8 +6,12 @@
     <section>
       <BaseCard>
         <div class="controls">
-          <BaseButton mode="outline">Refresh</BaseButton>
-          <BaseButton isLink to="/register" v-if="!isCoach">Register as Coach</BaseButton>
+          <BaseButton mode="outline" @refreshCoaches="refreshCoaches"
+            >Refresh</BaseButton
+          >
+          <BaseButton isLink to="/register" v-if="!isCoach"
+            >Register as Coach</BaseButton
+          >
         </div>
         <div v-if="hasCoaches">
           <ul>
@@ -36,33 +40,57 @@ export default {
       activeFilters: {
         frontend: true,
         backend: true,
-        career: true,
-      },
+        career: true
+      }
     };
+  },
+  // created() {
+  //   this.$store.dispatch('coaches/fetchCoaches');
+  // },
+  async asyncData({ $axios, store }) {
+    const { data } = await $axios.get(
+      "https://vuejs-course-d9ebe-default-rtdb.firebaseio.com/coaches.json"
+    );
+    const coaches = [];
+    for (const coach in data) {
+      coaches.push({
+        firstName: data[coach].firstName,
+        lastName: data[coach].lastName,
+        areas: data[coach].areas,
+        description: data[coach].description,
+        hourlyRate: data[coach].hourlyRate,
+        id: coach
+      });
+    }
+
+    store.dispatch("coaches/setCoaches", coaches);
   },
   computed: {
     filteredCoaches() {
       const coaches = this.$store.getters["coaches/coaches"];
 
       return coaches.filter(
-        (coach) =>
+        coach =>
           (this.activeFilters.frontend && coach.areas.includes("frontend")) ||
           (this.activeFilters.backend && coach.areas.includes("backend")) ||
           (this.activeFilters.career && coach.areas.includes("career"))
       );
     },
     isCoach() {
-      return this.$store.getters['coaches/isCoach'];
+      return this.$store.getters["coaches/isCoach"];
     },
     hasCoaches() {
       return this.$store.getters["coaches/hasCoaches"];
-    },
+    }
   },
   methods: {
     setFilters(filters) {
       this.activeFilters = filters;
     },
-  },
+    refreshCoaches() {
+      this.$store.dispatch("coaches/fetchCoaches");
+    }
+  }
 };
 </script>
 

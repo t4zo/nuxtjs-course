@@ -47,9 +47,9 @@ export default {
       }
 
       const request = {
-        coachId: this.$route.params.id,
         userEmail: this.email,
         message: this.message,
+        coachId: this.$route.params.id,
       }
 
       this.$store.dispatch('requests/contactCoach', request)

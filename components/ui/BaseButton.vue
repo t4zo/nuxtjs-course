@@ -3,7 +3,7 @@
     <NuxtLink v-if="isLink" :to="to" :class="mode">
       <slot></slot>
     </NuxtLink>
-    <button v-else :class="mode">
+    <button v-else :class="mode" @click="handleClick">
       <slot></slot>
     </button>
   </div>
@@ -11,6 +11,7 @@
 
 <script>
 export default {
+  emits: ['refreshCoaches'],
   props: {
     mode: {
       type: String,
@@ -27,7 +28,17 @@ export default {
       required: false,
       default: "/",
     },
+    // refreshCoaches: {
+    //   type: Function,
+    //   required: false,
+    //   default: () => {},
+    // }
   },
+  methods: {
+    handleClick() {
+      this.$emit('refreshCoaches');
+    }
+  }
 };
 </script>
 

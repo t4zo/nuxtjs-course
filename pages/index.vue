@@ -1,7 +1,13 @@
 <template>
-  <Tutorial/>
+  <div>
+    <p>Home</p>
+  </div>
 </template>
 
-<script>
-export default {}
-</script>
+<style scoped>
+div {
+  display: grid;
+  place-content: center;
+  height: calc(100vh - 80px);
+}
+</style>

@@ -1,6 +1,5 @@
 <template>
   <section>
-    <h2>Register as a coach</h2>
     <CoachForm @form-submitted="saveData" />
   </section>
 </template>

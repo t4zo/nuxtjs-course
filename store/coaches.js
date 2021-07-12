@@ -3,46 +3,71 @@
 // import getters from './gettersns';
 
 export const state = () => ({
-  coaches: [
-    {
-      id: 'c1',
-      firstName: 'Maximilian',
-      lastName: 'Schwarzmüller',
-      areas: ['frontend', 'backend', 'career'],
-      description: "I'm Maximilian and I've worked as a freelance web developer for years. Let me help you become a developer as well!",
-      hourlyRate: 30
-    },
-    {
-      id: 'c2',
-      firstName: 'Julie',
-      lastName: 'Jones',
-      areas: ['frontend', 'career'],
-      description: 'I am Julie and as a senior developer in a big tech company, I can help you get your first job or progress in your current role.',
-      hourlyRate: 30
-    }
-  ]
+
 });
 
 export const mutations = {
   addCoach(state, payload) {
     state.coaches.push(payload);
-  }
-}
+  },
+  setCoaches(state, payload) {
+    state.coaches = payload;
+  },
+};
 
 export const actions = {
-  addCoach(context, payload) {
+  async fetchCoaches(context) {
+    // console.log(!context.rootGetters.shouldUpdate)
+
+    if(!context.rootGetters.shouldUpdate) {
+      console.log('not updated')
+      return;
+    }
+
+    console.log('updated')
+    const { data } = await this.$axios.get(
+      "https://vuejs-course-d9ebe-default-rtdb.firebaseio.com/coaches.json"
+    );
+
+    const coaches = [];
+    for (const coach in data) {
+      coaches.push({
+        firstName: data[coach].firstName,
+        lastName: data[coach].lastName,
+        areas: data[coach].areas,
+        description: data[coach].description,
+        hourlyRate: data[coach].hourlyRate,
+        id: coach
+      });
+    }
+
+    context.commit("setCoaches", coaches);
+    context.commit("setFetchTimestamp");
+  },
+  setCoaches(context, payload) {
+    context.commit("setCoaches", payload);
+  },
+  async addCoach(context, payload) {
+    const userId = context.rootGetters.getUserId;
     const newCoach = {
-      id: context.rootGetters.getUserId,
       firstName: payload.first,
       lastName: payload.last,
       areas: payload.areas,
       description: payload.desc,
-      hourlyRate:  payload.rate,
-    }
+      hourlyRate: payload.rate
+    };
 
-    context.commit('addCoach', newCoach);
+    await this.$axios.put(
+      `https://vuejs-course-d9ebe-default-rtdb.firebaseio.com/coaches/${userId}.json`,
+      newCoach
+    );
+
+    context.commit("addCoach", {
+      ...newCoach,
+      id: userId
+    });
   }
-}
+};
 
 export const getters = {
   // fullName(state) {
@@ -55,11 +80,11 @@ export const getters = {
     return state.coaches?.length > 0;
   },
   isCoach(state, getters, rootState, rootGetters) {
-    const coaches = getters.coaches;
+    const coaches = rootGetters['coaches/coaches'];
     const userId = rootGetters.getUserId;
-    return coaches.some(coach => coach.userId === userId);
+    return coaches.some(coach => coach.id === userId);
   },
-  getCoachById: (state) => (id) => {
+  getCoachById: state => id => {
     return state.coaches.find(c => c.id === id);
-  }
-}
+  },
+};

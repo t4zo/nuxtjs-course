@@ -1,32 +1,65 @@
 export const state = () => ({
   requests: []
-})
+});
 
 export const mutations = {
   addRequest(state, payload) {
     state.requests.push(payload);
   },
-}
+  setRequests(state, payload) {
+    state.requests = payload;
+  }
+};
 
 export const getters = {
   requests(state, getters, rootState, rootGetters) {
     const coachId = rootGetters.getUserId;
     return state.requests?.filter(r => r.coachId === coachId);
   },
-  hasRequests(state, getters) {
-    return getters.requests?.length > 0;
-  },
-}
+  hasRequests(state) {
+    return state.requests?.length > 0;
+  }
+};
 
 export const actions = {
-  contactCoach(context, payload) {
+  async contactCoach(context, payload) {
     const newRequest = {
-      id: new Date().toISOString(),
-      coachId: payload.coachId,
       userEmail: payload.userEmail,
       message: payload.message,
+      coachId: payload.coachId,
+    };
+
+    console.log(newRequest)
+    
+    const { data } = await this.$axios.post(
+      `https://vuejs-course-d9ebe-default-rtdb.firebaseio.com/requests/${context.rootState.userId}.json`,
+      newRequest
+    );
+
+    newRequest.id = data.name;
+
+    context.commit("addRequest", newRequest);
+  },
+  setRequests(context, payload) {
+    context.commit("setRequests", payload);
+  },
+  async fetchRequests(context) {
+    const coachId = context.rootGetters.getUserId;
+    const { data } = await this.$axios.get(
+      `https://vuejs-course-d9ebe-default-rtdb.firebaseio.com/requests/${coachId}.json`
+    );
+    
+    const requests = [];
+
+    for (const key in data) {
+      requests.push({
+        coachId,
+        userEmail: data[key].userEmail,
+        message: data[key].message,
+        id: key
+      });
     }
 
-    context.commit('addRequest', newRequest);
+    context.commit("setRequests", requests);
   },
-}
+};

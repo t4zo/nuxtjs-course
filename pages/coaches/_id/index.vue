@@ -10,7 +10,7 @@
       <BaseCard>
         <header>
           <h2>Interested? Reach out now!</h2>
-          <BaseButton link :to="contactLink">Contact</BaseButton>
+          <BaseButton isLink :to="contactLink">Contact</BaseButton>
         </header>
       </BaseCard>
     </section>
@@ -44,13 +44,11 @@ export default {
     },
   },
   data() {
-    // console.log(this.$route);
     return {
       coach: null,
     };
   },
   created() {
-    console.log(this.$store.getters["coaches/coaches"])
     this.coach = this.$store.getters["coaches/getCoachById"](
       this.$route.params.id
     );
