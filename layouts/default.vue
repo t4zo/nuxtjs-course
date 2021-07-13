@@ -5,5 +5,10 @@
   </div>
 </template>
 
-<style>
-</style>
+<script>
+export default {
+  async beforeCreate() {
+    await this.$store.dispatch('auth/autoLogin');
+  }
+}
+</script>

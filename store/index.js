@@ -24,3 +24,9 @@ export const mutations = {
     state.lastFetch = new Date().getTime();
   }
 };
+
+export const actions = {
+  async nuxtServerInit(context) {
+    console.log('nuxtServerInit');
+  }
+}
