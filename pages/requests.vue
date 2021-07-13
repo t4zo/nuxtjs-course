@@ -1,25 +1,28 @@
 <template>
-  <BaseCard>
+  <UiBaseCard>
     <section v-if="hasRequests">
       <header>
         <h1>Requests Received</h1>
       </header>
       <ul>
         <li v-for="request in requests" :key="request.id">
-          <Request :request="request" />
+          <LazyRequest :request="request" />
         </li>
       </ul>
     </section>
     <section v-else>
       <p>You haven't received any requests yet</p>
     </section>
-  </BaseCard>
+  </UiBaseCard>
 </template>
 
 <script>
-import BaseCard from "~/components/ui/BaseCard.vue";
+// const BaseCard = () => ({
+//   component: import("~/components/ui/BaseCard.vue")
+// });
+
 export default {
-  components: { BaseCard },
+  // components: { BaseCard },
   middleware: 'authenticatedAndIsCoach',
   // async created() {
   //   this.$store.dispatch('requests/fetchRequests');

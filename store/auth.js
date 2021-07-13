@@ -31,8 +31,7 @@ export const actions = {
       payload
     );
 
-    // const expiresInMilliseconds = data.expiresIn *  1000;
-    const expiresInMilliseconds = 5000;
+    const expiresInMilliseconds = data.expiresIn *  1000;
     const expirationDate = new Date().getTime() + expiresInMilliseconds;
 
     const user = {
