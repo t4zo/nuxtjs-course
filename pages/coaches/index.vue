@@ -9,7 +9,11 @@
           <BaseButton mode="outline" @click="refreshCoaches"
             >Refresh</BaseButton
           >
-          <BaseButton isLink to="/auth?redirect=register" v-if="!isAuthenticated">
+          <BaseButton
+            isLink
+            to="/auth?redirect=register"
+            v-if="!isAuthenticated"
+          >
             Login to Register as Coach</BaseButton
           >
           <BaseButton isLink to="/register" v-if="!isCoach && isAuthenticated"
@@ -32,55 +36,63 @@
 </template>
 
 <script>
-import BaseCard from "@/components/ui/BaseCard.vue";
-import BaseButton from "@/components/ui/BaseButton.vue";
-import CoachFilter from "@/components/CoachFilter.vue";
+import { reactive, useStore, computed } from "@nuxtjs/composition-api";
 
 export default {
-  components: { BaseCard, BaseButton, CoachFilter },
-  data() {
-    return {
-      activeFilters: {
-        frontend: true,
-        backend: true,
-        career: true
-      }
-    };
-  },
-  // created() {
-  //   this.$store.dispatch('coaches/fetchCoaches');
-  // },
   async asyncData({ store }) {
-    await store.dispatch('coaches/fetchCoaches');
+    await store.dispatch("coaches/fetchCoaches");
   },
-  computed: {
-    filteredCoaches() {
-      const coaches = this.$store.getters["coaches/coaches"];
+  setup() {
+    const store = useStore();
+
+    const activeFilters = reactive({
+      frontend: true,
+      backend: true,
+      career: true
+    });
+
+    const filteredCoaches = computed(() => {
+      const coaches = store.getters["coaches/coaches"];
 
       return coaches?.filter(
         coach =>
-          (this.activeFilters.frontend && coach.areas.includes("frontend")) ||
-          (this.activeFilters.backend && coach.areas.includes("backend")) ||
-          (this.activeFilters.career && coach.areas.includes("career"))
+          (activeFilters.frontend && coach.areas.includes("frontend")) ||
+          (activeFilters.backend && coach.areas.includes("backend")) ||
+          (activeFilters.career && coach.areas.includes("career"))
       );
-    },
-    isAuthenticated() {
-      return this.$store.getters["auth/isAuthenticated"];
-    },
-    isCoach() {
-      return this.$store.getters["coaches/isCoach"];
-    },
-    hasCoaches() {
-      return this.$store.getters["coaches/hasCoaches"];
+    });
+
+    const isAuthenticated = computed(() => {
+      return store.getters["auth/isAuthenticated"];
+    });
+
+    const isCoach = computed(() => {
+      return store.getters["coaches/isCoach"];
+    });
+
+    const hasCoaches = computed(() => {
+      return store.getters["coaches/hasCoaches"];
+    });
+
+    function setFilters(filters) {
+      activeFilters.frontend = filters.frontend;
+      activeFilters.backend = filters.backend;
+      activeFilters.career = filters.career;
     }
-  },
-  methods: {
-    setFilters(filters) {
-      this.activeFilters = filters;
-    },
-    refreshCoaches() {
-      this.$store.dispatch("coaches/fetchCoaches");
+
+    function refreshCoaches() {
+      store.dispatch("coaches/fetchCoaches");
     }
+
+    return {
+      activeFilters,
+      filteredCoaches,
+      isAuthenticated,
+      isCoach,
+      hasCoaches,
+      setFilters,
+      refreshCoaches
+    };
   }
 };
 </script>

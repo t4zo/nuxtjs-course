@@ -31,17 +31,17 @@ export const actions = {
       payload
     );
 
-    const expiresInMilliseconds = data.expiresIn *  1000;
+    const expiresInMilliseconds = data.expiresIn * 1000;
     const expirationDate = new Date().getTime() + expiresInMilliseconds;
 
     const user = {
       ...data,
-      expirationDate,
-    }
+      expirationDate
+    };
 
     localStorage.setItem("auth", JSON.stringify(user));
 
-    context.dispatch('autoLogout', expiresInMilliseconds);
+    context.dispatch("autoLogout", expiresInMilliseconds);
 
     context.commit("setUser", data);
   },
@@ -52,44 +52,47 @@ export const actions = {
       payload
     );
 
+    const expiresInMilliseconds = data.expiresIn * 1000;
+    const expirationDate = new Date().getTime() + expiresInMilliseconds;
+
     const user = {
       ...data,
-      expirationDate,
-    }
+      expirationDate
+    };
 
     localStorage.setItem("auth", JSON.stringify(user));
 
-    context.dispatch('autoLogout', expiresInMilliseconds);
+    context.dispatch("autoLogout", expiresInMilliseconds);
 
     context.commit("setUser", data);
   },
   logout(context) {
     context.commit("setUser", null);
-    localStorage.removeItem('auth');
+    localStorage.removeItem("auth");
     clearTimeout(timer);
   },
   autoLogin(context) {
-    if(process.browser) {
+    if (process.browser) {
       const user = JSON.parse(localStorage.getItem("auth"));
-      if(!user) {
+      if (!user) {
         return;
       }
-      
-      const expiresInMilliseconds =  +user.expirationDate - new Date().getTime();
-      if(expiresInMilliseconds < 10000) {
+
+      const expiresInMilliseconds = +user.expirationDate - new Date().getTime();
+      if (expiresInMilliseconds < 10000) {
         return;
       }
-      
+
       if (user?.idToken && user?.localId) {
         context.commit("setUser", user);
-        context.dispatch('autoLogout', expiresInMilliseconds);
+        context.dispatch("autoLogout", expiresInMilliseconds);
       }
     }
   },
   autoLogout(context, expiresInMilliseconds) {
     timer = setTimeout(() => {
-      context.dispatch('logout');
-      this.$router.replace('coaches');
+      context.dispatch("logout");
+      this.$router.replace("coaches");
     }, expiresInMilliseconds);
-  },
+  }
 };

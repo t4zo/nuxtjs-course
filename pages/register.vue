@@ -5,16 +5,22 @@
 </template>
 
 <script>
-import CoachForm from "@/components/CoachForm.vue";
+import { useRouter,  useStore } from '@nuxtjs/composition-api';
 
 export default {
-  components: { CoachForm },
-  middleware: 'authenticated',
-  methods: {
-    async saveData(formData) {
-      await this.$store.dispatch('coaches/addCoach', formData);
-      this.$router.push('/coaches');
+  middleware: "authenticated",
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+
+    async function saveData(formData) {
+      await store.dispatch("coaches/addCoach", formData);
+      router.push("/coaches");
     }
+
+    return {
+      saveData
+    };
   }
 };
 </script>

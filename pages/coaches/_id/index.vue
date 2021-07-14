@@ -29,29 +29,34 @@
 </template>
 
 <script>
-import BaseBadge from "~/components/ui/BaseBadge.vue";
-import BaseButton from "~/components/ui/BaseButton.vue";
-import BaseCard from "~/components/ui/BaseCard.vue";
+import {
+  computed,
+  reactive,
+  useRoute,
+  useStore
+} from "@nuxtjs/composition-api";
 
 export default {
-  components: { BaseCard, BaseButton, BaseBadge },
-  computed: {
-    fullName() {
-      return `${this.coach.firstName} ${this.coach.lastName}`;
-    },
-    contactLink() {
-      return `${this.$route.path}/contact`;
-    },
-  },
-  data() {
+  setup() {
+    const route = useRoute();
+    const store = useStore();
+
+    const coachId = route.value.params.id;
+    const coach = reactive(store.getters["coaches/getCoachById"](coachId));
+
+    const fullName = computed(() => {
+      return `${coach.firstName} ${coach.lastName}`;
+    });
+
+    const contactLink = computed(() => {
+      return `${route.path}/contact`;
+    });
+
     return {
-      coach: null,
+      coach,
+      fullName,
+      contactLink
     };
-  },
-  created() {
-    this.coach = this.$store.getters["coaches/getCoachById"](
-      this.$route.params.id
-    );
-  },
+  }
 };
 </script>

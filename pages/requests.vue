@@ -1,5 +1,5 @@
 <template>
-  <UiBaseCard>
+  <BaseCard>
     <section v-if="hasRequests">
       <header>
         <h1>Requests Received</h1>
@@ -13,31 +13,33 @@
     <section v-else>
       <p>You haven't received any requests yet</p>
     </section>
-  </UiBaseCard>
+  </BaseCard>
 </template>
 
 <script>
-// const BaseCard = () => ({
-//   component: import("~/components/ui/BaseCard.vue")
-// });
+import { computed, useStore } from '@nuxtjs/composition-api';
 
 export default {
-  // components: { BaseCard },
   middleware: 'authenticatedAndIsCoach',
-  // async created() {
-  //   this.$store.dispatch('requests/fetchRequests');
-  // },
   async asyncData({ store }) {
     await store.dispatch('requests/fetchRequests');
   },
-  computed: {
-    requests() {
-      return this.$store.getters["requests/requests"];
-    },
-    hasRequests() {
-      return this.$store.getters["requests/hasRequests"];
+  setup() {
+    const store = useStore();
+
+    const requests = computed(() => {
+      return store.getters["requests/requests"];
+    });
+
+    const hasRequests = computed(() => {
+      return store.getters["requests/hasRequests"];
+    });
+
+    return {
+      requests,
+      hasRequests,
     }
-  }
+  },
 };
 </script>
 

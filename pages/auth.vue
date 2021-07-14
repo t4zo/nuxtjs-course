@@ -24,7 +24,7 @@
           switchModeButtonCaption
         }}</base-button>
       </div>
-      <div :style="{textAlign: 'center', marginTop: '20px'}">
+      <div :style="{ textAlign: 'center', marginTop: '20px' }">
         <p v-if="!!error">An error occurred</p>
         <p v-if="isLoading">Authenticating...</p>
       </div>
@@ -33,68 +33,81 @@
 </template>
 
 <script>
-import BaseCard from "~/components/ui/BaseCard.vue";
-import BaseButton from "~/components/ui/BaseButton.vue";
+import { ref, reactive, computed, useRoute, useRouter, useStore } from "@nuxtjs/composition-api";
 
 export default {
-  components: { BaseCard, BaseButton },
-  middleware: 'unauthenticated',
-  data() {
-    return {
-      user: {
-        email: "",
-        password: ""
-      },
-      formIsValid: true,
-      mode: "login",
-      isLoading: false,
-      error: null
-    };
-  },
-  computed: {
-    submitButtonCaption() {
-      return this.mode === "login" ? "Login" : "Signup";
-    },
-    switchModeButtonCaption() {
-      return this.mode === "login" ? "Signup" : "Login";
-    }
-  },
-  methods: {
-    async handleSubmitForm() {
-      this.formIsValid = true;
+  middleware: "unauthenticated",
+  setup() {
+    const route = useRoute();
+    const router = useRouter();
+    const store = useStore();
+
+    const user = reactive({
+      email: "",
+      password: ""
+    });
+
+    const formIsValid = ref(true);
+    const mode = ref("login");
+    const isLoading = ref(false);
+    const error = ref(null);
+
+    const submitButtonCaption = computed(() => {
+      return mode.value === "login" ? "Login" : "Signup";
+    });
+
+    const switchModeButtonCaption = computed(() => {
+      return mode.value === "login" ? "Signup" : "Login";
+    });
+
+    async function handleSubmitForm() {
+      formIsValid.value = true;
 
       if (
-        this.user.email.trim() === "" ||
-        !this.user.email.trim().includes("@") ||
-        this.user.password.trim().length < 6
+        user.email.trim() === "" ||
+        !user.email.trim().includes("@") ||
+        user.password.trim().length < 6
       ) {
-        this.formIsValid = false;
+        formIsValid.value = false;
         return;
       }
 
-      this.isLoading = true;
+      isLoading.value = true;
 
       try {
-        if (this.mode === "signup") {
-          await this.$store.dispatch("auth/signup", this.user);
-          this.$router.replace("/coaches");
+        if (mode.value === "signup") {
+          await store.dispatch("auth/signup", user);
+          router.replace("/coaches");
         } else {
-          await this.$store.dispatch("auth/login", this.user);
-          const redirectUrl = this.$route.query.redirectUrl || 'coaches';
-          this.$router.replace(`/${redirectUrl}`);
+          await store.dispatch("auth/login", user);
+          const redirectUrl = route.value.query.redirectUrl || "coaches";
+          router.replace(`/${redirectUrl}`);
         }
       } catch (err) {
-        this.error = err.message || "Failed to authenticate";
+        error.value = err.message || "Failed to authenticate";
         setTimeout(() => {
-          this.error = null;
+          error.value = null;
         }, 4000);
       }
 
-      this.isLoading = false;
-    },
-    switchAuthMode() {
-      this.mode = this.mode === "login" ? "signup" : "login";
+      isLoading.value = false;
     }
+
+    function switchAuthMode() {
+      mode.value = mode.value === "login" ? "signup" : "login";
+    }
+
+    return {
+      user,
+      formIsValid,
+      mode,
+      isLoading,
+      error,
+      submitButtonCaption,
+      switchModeButtonCaption,
+      handleSubmitForm,
+      switchAuthMode,
+    };
   }
 };
 </script>
